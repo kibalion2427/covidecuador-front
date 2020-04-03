@@ -1,0 +1,11 @@
+
+creating a pagination config object and using it with object spread syntax worked!
+
+config = { 
+    pagination : {
+        pageSizeOptions : ['30', '40'], 
+        showSizeChanger : true 
+    }
+}
+
+<Table {...config} {...otherProps} />
