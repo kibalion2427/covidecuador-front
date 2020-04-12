@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Table } from "antd";
+import { Table, Skeleton } from "antd";
 import axios from "axios";
 import styled from "styled-components";
+
+import socketIOClient from "socket.io-client";
 
 const StyledTableContainer = styled.div`
   width: 50%;
   height: 20%;
-  /* align-items: flex-start; */
 `;
-
+// TODO: ADD STYLES AND FILTERING FUCTION
 const Casos = () => {
   //   "pais": "EC",
   //         "provincia": "Gye",
@@ -29,38 +30,61 @@ const Casos = () => {
     {
       title: "Provincia",
       dataIndex: "provincia",
-      key: "provincia"
+      key: "provincia",
+      width: "20%"
     },
     {
       title: "Fecha",
       dataIndex: "fecha",
-      key: "fecha"
+      key: "fecha",
+      width: "30%"
     }
   ];
-  const [data, setData] = useState([]);
+
+  const [endpoint, setEndPoint] = useState("http://127.0.0.1:4000"); //NODE ENDPOINT
+  const [response, setResponse] = useState(false);
+  const [isLoading, setIsloading] = useState(true);
+
   useEffect(() => {
-    let ignore = false;
-
-    async function fetchData() {
-      const result = await axios.get("http://127.0.0.1:8000/viewset/covid/");
-      if (!ignore) setData(result.data);
-    }
-
-    fetchData();
-    return () => {
-      ignore = true;
-    };
+    const socket = socketIOClient(endpoint);
+    const theme = "blue";
+    socket.on("FromAPI", data => {
+      setResponse(data);
+      setIsloading(false);
+    });
   }, []);
-  return (
-    <StyledTableContainer>
-      <Table
-        dataSource={data}
-        columns={columns}
-        rowKey="pais"
-        pagination={{ pageSizeOptions: ["3", "5"], showSizeChanger: true }}
-      />
-    </StyledTableContainer>
-  );
+
+  if (isLoading) {
+    return (
+      <StyledTableContainer>
+        <Skeleton loading={isLoading} active />
+      </StyledTableContainer>
+    );
+  } else {
+    return (
+      <StyledTableContainer>
+        <Table
+          dataSource={response}
+          columns={columns}
+          rowKey="pais"
+          pagination={{
+            pageSizeOptions: ["3", "5"],
+            showSizeChanger: true,
+            defaultPageSize: 3
+            // size: "small"
+          }}
+        />
+      </StyledTableContainer>
+    );
+  }
 };
+// return (
+//   //
+
+//     />
+//   )
+//   // </StyledTableContainer>
+// );
+// };
 
 export default Casos;

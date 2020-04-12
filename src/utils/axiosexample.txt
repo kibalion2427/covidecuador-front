@@ -1,0 +1,13 @@
+  // useEffect(() => {
+  //   let ignore = false;
+
+  //   async function fetchData() {
+  //     const result = await axios.get("http://127.0.0.1:8000/viewset/covid/");
+  //     if (!ignore) setData(result.data);
+  //   }
+
+  //   fetchData();
+  //   return () => {
+  //     ignore = true;
+  //   };
+  // }, []);
